@@ -4,7 +4,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import com.example.demo.service.MemberService;
+import com.example.demo.dto.MemberDTO;
+import lombok.RequiredArgsConstructor;
 
+//dto 이용하지 않는 경우
+/*
 @Controller
 public class MemberController {
     //회원가입 페이지 출력 요청
@@ -22,4 +28,30 @@ public class MemberController {
         return "index";
     }
 
+}*/
+
+//dto이용하는경우
+@Controller
+@RequiredArgsConstructor //MemberService에 대한 멤버를 사용 가능
+public class MemberController {
+
+    // 생성자 주입
+    private final MemberService memberService;
+
+    // 회원가입 페이지 출력 요청
+    @GetMapping("/member/save")
+    public String saveForm() {
+        return "save";
+    }
+
+    @PostMapping("/member/save")    // name값을 requestparam에 담아온다
+    public String save(@ModelAttribute MemberDTO memberDTO) {
+        System.out.println("MemberController.save");
+        System.out.println("memberDTO = " + memberDTO);
+        memberService.save(memberDTO);
+
+        return "index";
+    }
 }
+//MemberController.class
+
