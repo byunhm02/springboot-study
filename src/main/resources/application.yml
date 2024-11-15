@@ -15,4 +15,10 @@ spring:
     open-in-view: false
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create #기존 테이블을 삭제하고 새로 생성합니다. 모든 데이터가 삭제됩니다.
+
+  #카카오 소셜 로그인
+  kakao:
+    client_id: 69611c537135468129dbf23caa99c358
+    redirect_uri: http://localhost:8080/callback
+    client-secret: sfmP6hgRzBwemYomPjioY1EnedSH0dXu

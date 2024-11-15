@@ -52,6 +52,14 @@ public class MemberController {
 
         return "index";
     }
+
+    @PostMapping("/set-nickname")
+    public String setNickName(@RequestParam("nickName") String nickName) {
+        System.out.println("닉네임을 설정해주세요");
+        System.out.println("MemberController.setNickName");
+        System.out.println("nickname = " + nickName);
+        return "main";
+    }
 }
 //MemberController.class
 
