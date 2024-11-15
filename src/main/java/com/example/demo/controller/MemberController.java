@@ -54,10 +54,22 @@ public class MemberController {
     }
 
     @PostMapping("/set-nickname")
-    public String setNickName(@RequestParam("nickName") String nickName) {
+    public String setNickName(@RequestParam("memberName") String memberName, @RequestParam("nickName") String nickName) {
         System.out.println("닉네임을 설정해주세요");
         System.out.println("MemberController.setNickName");
+        System.out.println("memberName = " + memberName);
         System.out.println("nickname = " + nickName);
+        // 해당 memberName에 해당하는 사용자 정보를 업데이트하는 로직 호출
+        MemberDTO memberDTO = memberService.findByMemberName(memberName); // memberName으로 사용자 조회
+        System.out.println("사용자를 찾았습니다: " + memberDTO.getMemberName()); // 조회된 사용자 확인
+        if (memberDTO != null) {
+            memberDTO.setNickName(nickName); // 닉네임 설정
+            memberService.save(memberDTO); // 사용자 정보 업데이트
+            System.out.println("닉네임이 설정되었습니다.");
+        } else {
+            System.out.println("사용자를 찾을 수 없습니다.");
+        }
+
         return "main";
     }
 }

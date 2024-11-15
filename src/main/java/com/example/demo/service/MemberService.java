@@ -1,5 +1,6 @@
 package com.example.demo.service;
 import com.example.demo.dto.KakaoTokenResponseDTO;
+import com.example.demo.jwt.JwtTokenProvider;
 import com.nimbusds.jose.shaded.gson.JsonElement;
 import com.nimbusds.jose.shaded.gson.JsonObject;
 import com.nimbusds.jose.shaded.gson.JsonParser;
@@ -16,6 +17,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository; // 먼저 jpa, mysql dependency 추가
     private static final String KAKAO_USERINFO_URL = "https://kapi.kakao.com/v2/user/me";
+    private final JwtTokenProvider jwtTokenProvider;
 
     public void save(MemberDTO memberDTO) {
         // repsitory의 save 메서드 호출
@@ -53,7 +55,7 @@ public class MemberService {
         MemberDTO memberDTO = new MemberDTO();
         memberDTO.setMemberName(nickname); // 닉네임을 MemberDTO에 설정
 
-
+        boolean isNewMember=false;
         // 카카오로부터 받은 정보가 있을 경우 추가 설정
         if (memberDTO.getMemberName() != null) {
             // 사용자 정보 확인을 위한 출력
@@ -64,6 +66,7 @@ public class MemberService {
             MemberEntity existingMember = memberRepository.findByMemberName(memberDTO.getMemberName()).orElse(null);
             if (existingMember == null) {
                 // 신규 회원일 경우 저장
+                isNewMember=true;
                 System.out.println("신규회원입니다. 멤버를 저장하고싶어요..ㅠㅠ");
                 save(memberDTO); //// DTO를 저장하는 메서드 호출
             }else{
@@ -72,9 +75,31 @@ public class MemberService {
         }else {
             System.out.println("카카오에서 사용자 정보를 가져오지 못했습니다.");
         }
+        memberDTO.setNewMember(isNewMember);
+        //JWT 토큰 발급
+        String jwtAccessToken=jwtTokenProvider.createToken(memberDTO.getMemberName(),3600);
+        String jwtRefreshToken=jwtTokenProvider.createToken(memberDTO.getMemberName(),86400);
+
+        //MemberDTO에 토큰 설정
+        memberDTO.setAccessToken(jwtAccessToken);
+        memberDTO.setRefreshToken(jwtRefreshToken);
+        //memberDTO.setNewMember(isNewMember);
+        // 토큰 출력 (발급 확인)
+        System.out.println("Access Token: " + jwtAccessToken);
+        System.out.println("Refresh Token: " + jwtRefreshToken);
+
+
         return memberDTO;
 
 
     }
+    public MemberDTO findByMemberName(String memberName) {
+        MemberEntity memberEntity = memberRepository.findByMemberName(memberName).orElse(null);
+        if (memberEntity != null) {
+            return MemberDTO.toMemberDTO(memberEntity); // 필요시 변환
+        }
+        return null;
+    }
+
 }
 //MemberService.class

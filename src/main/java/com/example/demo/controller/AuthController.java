@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.jwt.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import com.example.demo.dto.MemberDTO;
@@ -15,10 +16,13 @@ public class AuthController {
     private static final String KAKAO_REDIRECT_URI = "http://localhost:8080/callback"; // 실제 redirect URI로 변경
     private final MemberService memberService;
     private final KakaoAuthService kakaoAuthService;
+    private final JwtTokenProvider jwtTokenProvider;
+
     // 하나의 생성자로 두 의존성 주입
-    public AuthController(MemberService memberService, KakaoAuthService kakaoAuthService) {
+    public AuthController(MemberService memberService, KakaoAuthService kakaoAuthService,JwtTokenProvider jwtTokenProvider) {
         this.memberService = memberService;
         this.kakaoAuthService = kakaoAuthService;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @GetMapping("/auth/login")
@@ -43,10 +47,20 @@ public class AuthController {
         String accessToken=kakaoAuthService.getAccessTokenFromKakao(code);
         System.out.println("Access Token: " + accessToken);
         MemberDTO memberDTO=memberService.getMemberFromKakao(accessToken);
-        if (memberDTO.getMemberName()==null) {
+        /*
+        if (memberDTO.isNewMember()) {
             model.addAttribute("member",memberDTO);
             return "nicknameForm";
         }
+
+         */
+
+        //로그인 성공: JWT발급
+        //String jwtAccessToken=jwtTokenProvider.createToken(memberDTO.getMemberName(),3600); //1시간 유효
+        //String refreshToken=jwtTokenProvider.createToken(memberDTO.getMemberName(),86400);//24시간 유효
+
+
+
         System.out.println("로그인성공");
         return "main";
     }

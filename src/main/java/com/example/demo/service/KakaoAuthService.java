@@ -53,7 +53,7 @@ public class KakaoAuthService {
             log.info("Access Token!!: {}", response.getAccessToken());
             return response.getAccessToken();
         }
-        throw new RuntimeException("Failed to get access token from Kakao");
+        throw new RuntimeException("카카오에서 엑세스 토큰을 받아오는데 실패했습니다.");
     }
 
 

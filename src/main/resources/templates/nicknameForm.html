@@ -1,4 +1,5 @@
 <form action="/set-nickname" method="post">
+    <input type="hidden" name="memberName" value="${member.memberName}"> <!-- memberName 전달 -->
     <input type="hidden" name="memberEmail" value="${member.memberEmail}">
     <label for="nickname">닉네임:</label>
     <input type="text" id="nickname" name="nickName" required>
